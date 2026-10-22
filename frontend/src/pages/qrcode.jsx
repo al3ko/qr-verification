@@ -1,6 +1,6 @@
 
 import { QRCodeSVG } from "qrcode.react";
-import PortalLayout from "../components/portalayout";
+import PortalLayout from "../components/portallayout";
 
 function QRCodePage() {
   const demoCredential = JSON.stringify({

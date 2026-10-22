@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import PortalLayout from "../components/portalayout";
+import PortalLayout from "../components/portallayout";
 
 function StaffScanner() {
   const [studentNumber, setStudentNumber] = useState("");
