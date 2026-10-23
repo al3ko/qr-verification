@@ -2,6 +2,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.auth import router as auth_router
+
 app = FastAPI(
     title="Smart QR Student Verification API",
     description=(
@@ -21,6 +23,13 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+# Register authentication endpoints.
+app.include_router(
+    auth_router,
+    prefix="/api/auth",
+    tags=["Authentication"],
 )
 
 
