@@ -1,49 +1,153 @@
 
+import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import axios from "axios";
 import PortalLayout from "../components/portallayout";
 
+const API_URL = "http://127.0.0.1:8000";
+
 function QRCodePage() {
-  const demoCredential = JSON.stringify({
-    type: "DEMO_ONLY",
-    studentNumber: "STU/2026/001",
-    credentialId: "DEMO-CREDENTIAL-001",
-  });
+  const [credential, setCredential] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function generateQRCode() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        setError("Please log in before generating your QR code.");
+        return;
+      }
+
+      const response = await axios.post(
+        `${API_URL}/api/student/qr-code`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCredential(response.data);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        setError("Your session has expired. Please log in again.");
+      } else if (err.response?.status === 403) {
+        setError("Only student accounts can generate QR credentials.");
+      } else {
+        setError(
+          err.response?.data?.detail ||
+            "Unable to generate your QR code. Please try again."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <PortalLayout title="My QR Code">
-      <div className="portal-card" style={{ maxWidth: 650, margin: "auto" }}>
+      <div
+        className="portal-card"
+        style={{ maxWidth: 650, margin: "auto" }}
+      >
         <h2 style={{ textAlign: "center" }}>Student QR Credential</h2>
 
         <p className="portal-muted" style={{ textAlign: "center" }}>
-          Demonstration QR code for the student identity verification system.
+          Generate your secure QR credential for student identity verification.
         </p>
 
-        <QRCodeSVG
-          value={demoCredential}
-          size={240}
-          level="H"
-          includeMargin
-          className="portal-qr"
-        />
+        {error && (
+          <div className="portal-notice" role="alert">
+            {error}
+          </div>
+        )}
 
-        <div style={{ textAlign: "center" }}>
-          <p><strong>Student Number:</strong> STU/2026/001</p>
-          <span className="portal-status warning">Demo QR Code</span>
-        </div>
+        {!credential ? (
+          <div style={{ textAlign: "center", padding: "24px 0" }}>
+            <p>Generate a QR code to get started.</p>
 
-        <div className="portal-notice">
-          This QR code contains demonstration data only. It must not be used
-          to verify a real student. A secure, signed credential and server-side
-          verification will be implemented with the backend.
-        </div>
+            <button
+              className="portal-button"
+              onClick={generateQRCode}
+              disabled={loading}
+            >
+              {loading ? "Generating..." : "Generate QR Code"}
+            </button>
+          </div>
+        ) : (
+          <>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                margin: "24px 0",
+              }}
+            >
+              <QRCodeSVG
+                value={credential.qr_token}
+                size={240}
+                level="H"
+                includeMargin
+                className="portal-qr"
+              />
+            </div>
 
-        <button
-          className="portal-button"
-          style={{ display: "block", margin: "auto" }}
-          onClick={() => window.print()}
-        >
-          Print QR Code
-        </button>
+            <div style={{ textAlign: "center" }}>
+              <span className="portal-status">
+                Active QR Credential
+              </span>
+
+              <p>
+                <strong>Credential ID:</strong>{" "}
+                {credential.qr_code_id}
+              </p>
+
+              <p>
+                <strong>Expires:</strong>{" "}
+                {new Date(credential.expires_at).toLocaleString()}
+              </p>
+
+              <p className="portal-muted">
+                {credential.message}
+              </p>
+            </div>
+
+            <div className="portal-notice">
+              Keep your QR credential private. It expires after 24 hours.
+              Generating a new credential revokes the previous one.
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "12px",
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                className="portal-button"
+                onClick={() => window.print()}
+              >
+                Print QR Code
+              </button>
+
+              <button
+                className="portal-button"
+                onClick={generateQRCode}
+                disabled={loading}
+              >
+                {loading ? "Generating..." : "Regenerate QR"}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </PortalLayout>
   );
