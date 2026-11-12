@@ -38,5 +38,5 @@ def generate_qr_image(token: str) -> str:
 
 
 def get_qr_expiry() -> datetime:
-    """Set the QR credential to expire after 24 hours."""
-    return datetime.now(timezone.utc) + timedelta(hours=24)
+    """Set the QR credential to expire after 90 seconds."""
+    return datetime.now(timezone.utc) + timedelta(seconds=90)

@@ -20,12 +20,9 @@ export default defineConfig({
         start_url: "/",
         scope: "/",
         icons: [
-          {
-            src: "/pwa-icon.svg",
-            sizes: "any",
-            type: "image/svg+xml",
-            purpose: "any",
-          },
+          { src: "/pwa-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "/pwa-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
+          { src: "/pwa-icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
         ],
       },
 
@@ -35,4 +32,14 @@ export default defineConfig({
       },
     }),
   ],
+
+  server: {
+    host: "0.0.0.0",
+    proxy: {
+      "/api": { target: "http://127.0.0.1:8000", changeOrigin: true },
+    },
+    allowedHosts: [
+      ".trycloudflare.com",
+    ],
+  },
 });

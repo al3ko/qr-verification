@@ -18,13 +18,17 @@ class VerificationLog(Base):
         index=True,
     )
 
+    subject_school_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.school_id", ondelete="SET NULL"), nullable=True, index=True
+    )
+
     qr_code_id: Mapped[int | None] = mapped_column(
         ForeignKey("qr_codes.id", ondelete="SET NULL"),
         nullable=True,
     )
 
     verified_by: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="RESTRICT"),
+        ForeignKey("users.school_id", ondelete="RESTRICT"),
         nullable=False,
         index=True,
     )
@@ -36,6 +40,8 @@ class VerificationLog(Base):
     location: Mapped[str | None] = mapped_column(
         String(255), nullable=True
     )
+
+    phase: Mapped[str | None] = mapped_column(String(20), nullable=True)
 
     details: Mapped[str | None] = mapped_column(
         Text, nullable=True

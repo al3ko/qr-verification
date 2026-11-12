@@ -1,16 +1,15 @@
-
 from collections.abc import Callable
 
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy.orm import Session
 from jwt.exceptions import InvalidTokenError
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.db.session import get_db
+from app.models.student import Student
 from app.models.user import User
-
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
@@ -24,44 +23,48 @@ def get_current_user(
         detail="Invalid or expired authentication token",
         headers={"WWW-Authenticate": "Bearer"},
     )
-
     if credentials is None:
         raise unauthorized
-
     try:
-        payload = jwt.decode(
-            credentials.credentials,
-            settings.jwt_secret_key,
-            algorithms=["HS256"],
-        )
+        payload = jwt.decode(credentials.credentials, settings.jwt_secret_key, algorithms=["HS256"])
         subject = payload.get("sub")
-
         if subject is None:
             raise unauthorized
-
-        user_id = int(subject)
-
+        school_id = int(subject)
     except (InvalidTokenError, ValueError, TypeError):
         raise unauthorized
-
-    user = db.get(User, user_id)
-
+    user = db.get(User, school_id)
     if user is None or not user.is_active:
         raise unauthorized
-
     return user
 
 
 def require_roles(*allowed_roles: str) -> Callable:
-    def role_checker(
-        current_user: User = Depends(get_current_user),
-    ) -> User:
+    def role_checker(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role not in allowed_roles:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You do not have permission to access this resource",
-            )
-
+            raise HTTPException(status_code=403, detail="You do not have permission to access this resource")
         return current_user
-
     return role_checker
+
+
+def require_approved_student(
+    current_user: User = Depends(require_roles("student")),
+    db: Session = Depends(get_db),
+) -> User:
+    student = db.query(Student).filter(Student.user_id == current_user.school_id).first()
+    if student is None:
+        raise HTTPException(status_code=404, detail="Student profile not found")
+    if student.approval_status != "approved":
+        message = (
+            f"Registration was rejected: {student.rejection_reason}"
+            if student.approval_status == "rejected"
+            else "Your registration is awaiting administrator approval"
+        )
+        raise HTTPException(status_code=403, detail=message)
+    return current_user
+
+
+def require_security_guard(current_user: User = Depends(require_roles("staff"))) -> User:
+    if current_user.work_role != "Security Staff":
+        raise HTTPException(status_code=403, detail="Only Security Staff can scan and verify QR credentials")
+    return current_user

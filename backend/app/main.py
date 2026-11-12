@@ -1,5 +1,8 @@
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from sqlalchemy import text
+
+from app.db.session import engine
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.auth import router as auth_router
@@ -22,6 +25,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:5174",
+        "https://bumper-typically-post-spokesman.trycloudflare.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -61,7 +65,12 @@ def root():
 
 @app.get("/api/health")
 def health_check():
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except Exception:
+        raise HTTPException(status_code=503, detail="Database unavailable")
     return {
         "status": "healthy",
-        "database": "not connected yet",
+        "database": "connected",
     }

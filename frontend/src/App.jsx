@@ -6,7 +6,10 @@ import StudentDashboard from "./pages/studentdashboard";
 import StudentProfile from "./pages/studentprofile";
 import QRCodePage from "./pages/qrcode";
 import StaffScanner from "./pages/staffscanner";
+import StaffDashboard from "./pages/staffdashboard";
+import AccessHistory from "./pages/accesshistory";
 import AdminDashboard from "./pages/admindashboard";
+import { PwaInstallProvider } from "./components/pwainstall";
 
 
 function ComingSoon({ title }) {
@@ -30,6 +33,7 @@ function ComingSoon({ title }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <PwaInstallProvider>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -37,9 +41,13 @@ export default function App() {
         <Route path="/profile" element={<StudentProfile />} />
         <Route path="/qr-code" element={<QRCodePage />} />
         <Route path="/staff-scanner" element={<StaffScanner />} />
+        <Route path="/staff" element={<StaffDashboard />} />
+        <Route path="/history" element={<AccessHistory />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<ComingSoon title="Page Not Found" />} />
       </Routes>
+      </PwaInstallProvider>
     </BrowserRouter>
   );
 }
+

@@ -12,10 +12,14 @@ class QRCode(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
 
-    student_id: Mapped[int] = mapped_column(
+    student_id: Mapped[int | None] = mapped_column(
         ForeignKey("students.id", ondelete="CASCADE"),
-        nullable=False,
+        nullable=True,
         index=True,
+    )
+
+    staff_school_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.school_id", ondelete="CASCADE"), nullable=True, index=True
     )
 
     token_hash: Mapped[str] = mapped_column(
@@ -29,6 +33,8 @@ class QRCode(Base):
     is_revoked: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False
     )
+
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
