@@ -7,7 +7,11 @@ import "../styles/portal.css";
 export default function PortalLayout({ title, role = "student", children }) {
   const [theme, setTheme] = useState(() => localStorage.getItem("qr-portal-theme") || "light");
   useEffect(() => { localStorage.setItem("qr-portal-theme", theme); }, [theme]);
-  const links = role === "admin" ? [{ to: "/admin", label: "Dashboard", icon: "dashboard" }] : role === "guard" ? [
+  const links = role === "admin" ? [
+    { to: "/admin", label: "Dashboard", icon: "dashboard" },
+    { to: "/admin/anomalies", label: "Anomaly Alerts", icon: "history" },
+    { to: "/admin/accounts", label: "Accounts", icon: "profile" },
+  ] : role === "guard" ? [
     { to: "/staff-scanner", label: "QR Scanner", icon: "scan" }, { to: "/history", label: "Scan History", icon: "history" },
   ] : role === "staff" ? [
     { to: "/staff", label: "Home", icon: "home" }, { to: "/history", label: "History", icon: "history" },
@@ -29,8 +33,8 @@ export default function PortalLayout({ title, role = "student", children }) {
   }
   return <div className="portal" data-theme={theme}>
     <aside className="portal-sidebar">
-      <Link to="/" className="portal-brand"><span className="portal-brand-mark"><Icon name="dashboard" /></span>QR Verify</Link>
-      <p className="portal-role">{role === "guard" ? "Security Staff" : role} portal</p>
+      <Link to="/" className="portal-brand"><span className="portal-brand-mark"><span>EC</span></span><span className="portal-brand-name">Entry<span>Code</span></span></Link>
+      <p className="portal-role">{role === "guard" ? "Security" : role === "admin" ? "Administration" : role === "staff" ? "Staff" : "Student"} Portal</p>
       <nav className="portal-nav" aria-label="Main navigation">{renderLinks()}</nav>
       <Link to="/" onClick={logOut} className="portal-logout"><Icon name="logout" /><span>Log out</span></Link>
     </aside>

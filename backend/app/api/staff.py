@@ -13,6 +13,7 @@ from app.models.verificationlog import VerificationLog
 from app.schemas.qr import QRCodeResponse
 from app.schemas.verification import QRVerificationRequest, QRVerificationResponse
 from app.services.qr_service import generate_qr_image, generate_qr_token, get_qr_expiry, hash_qr_token
+from app.services.anomaly_detection import score_verification
 
 router = APIRouter()
 
@@ -120,9 +121,25 @@ def verify_qr(request: QRVerificationRequest, current_user: User = Depends(requi
     db.add(log)
     db.commit()
     db.refresh(log)
+    anomaly = None
+    accepted_outcome, accepted_message = outcome, message
+    try:
+        anomaly = score_verification(db, log)
+        if anomaly and anomaly.get("is_anomaly"):
+            if anomaly.get("severity") == "high" and outcome == "verified":
+                outcome = "high_risk_anomaly"
+                message = f"Denied: {anomaly['description']}."
+                log.outcome = outcome
+                log.details = message
+            db.commit()
+    except Exception:
+        db.rollback()  # Anomaly scoring is advisory and must not block QR verification.
+        anomaly = None
+        outcome, message = accepted_outcome, accepted_message
     return QRVerificationResponse(verified=outcome == "verified", outcome=outcome, message=message,
-        student_name=user.full_name if user else None, registration_number=student.registration_number if student else None,
-        course=(student.degree or student.course) if student else None, school_id=user.school_id if user else subject_school_id,
-        year_of_study=student.year_of_study if student else None, photo_data=user.photo_data if user else None,
-        subject_role=("student" if student else (user.work_role if user else None)), phase=request.phase, location=request.location,
+        anomaly_detected=bool(anomaly and anomaly.get("is_anomaly")),
+        student_name=user.full_name if outcome == "verified" and user else None, registration_number=student.registration_number if outcome == "verified" and student else None,
+        course=(student.degree or student.course) if outcome == "verified" and student else None, school_id=user.school_id if outcome == "verified" and user else None,
+        year_of_study=student.year_of_study if outcome == "verified" and student else None, photo_data=user.photo_data if outcome == "verified" and user else None,
+        subject_role=("student" if student else (user.work_role if user else None)) if outcome == "verified" else None, phase=request.phase, location=request.location,
         scanned_at=log.scanned_at.isoformat() if log.scanned_at else None)

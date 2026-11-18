@@ -14,18 +14,11 @@ import { PwaInstallProvider } from "./components/pwainstall";
 
 function ComingSoon({ title }) {
   return (
-    <main style={{ fontFamily: "Arial", padding: "40px", textAlign: "center" }}>
+    <main className="entrycode-not-found">
+      <div className="entrycode-auth-brand"><span className="entrycode-auth-mark">EC</span><span>Entry<span>Code</span></span></div>
       <h1>{title}</h1>
-      <p>This page is being developed.</p>
-      <p><Link to="/">Back to Login</Link></p>
-      <nav style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap" }}>
-        <Link to="/register">Register</Link>
-        <Link to="/student">Student Dashboard</Link>
-        <Link to="/profile">Student Profile</Link>
-        <Link to="/qr-code">My QR Code</Link>
-        <Link to="/staff-scanner">Staff Scanner</Link>
-        <Link to="/admin">Admin Dashboard</Link>
-      </nav>
+      <p>The page you requested could not be found.</p>
+      <Link to="/">Return to sign in</Link>
     </main>
   );
 }
@@ -44,6 +37,8 @@ export default function App() {
         <Route path="/staff" element={<StaffDashboard />} />
         <Route path="/history" element={<AccessHistory />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/anomalies" element={<AdminDashboard page="anomalies" />} />
+        <Route path="/admin/accounts" element={<AdminDashboard page="accounts" />} />
         <Route path="*" element={<ComingSoon title="Page Not Found" />} />
       </Routes>
       </PwaInstallProvider>

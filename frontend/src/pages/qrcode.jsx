@@ -57,7 +57,7 @@ function QRCodePage() {
         className="portal-card"
         style={{ maxWidth: 650, margin: "auto" }}
       >
-        <h2 style={{ textAlign: "center" }}>Student QR Credential</h2>
+        <h2 style={{ textAlign: "center" }}>Student EntryCode</h2>
 
         <p className="portal-muted" style={{ textAlign: "center" }}>
           Generate your secure QR credential for student identity verification.
@@ -120,7 +120,7 @@ function QRCodePage() {
             </div>
 
             <div className="portal-notice">
-              Keep your QR credential private. It expires after 24 hours.
+              Keep your EntryCode private. It expires after 90 seconds.
               Generating a new credential revokes the previous one.
             </div>
 

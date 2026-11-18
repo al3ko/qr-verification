@@ -33,3 +33,4 @@ class QRVerificationResponse(BaseModel):
     phase: str | None = None
     location: str | None = None
     scanned_at: str | None = None
+    anomaly_detected: bool = False

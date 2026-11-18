@@ -106,7 +106,8 @@ function Register() {
 
   return (
     <main className="page-container">
-      <div className="card" style={{ maxWidth: 760, margin: "30px auto" }}>
+      <div className="card entrycode-register-card" style={{ maxWidth: 760, margin: "30px auto" }}>
+        <div className="entrycode-auth-brand entrycode-register-brand"><span className="entrycode-auth-mark">EC</span><span>Entry<span>Code</span></span></div>
         <h1 className="page-title">Student Registration</h1>
         <p className="page-description">Register with your Strathmore School ID. Student accounts need administrator approval before QR credentials are available.</p>
         {error && <div className="alert alert-danger" role="alert">{error}</div>}

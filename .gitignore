@@ -20,3 +20,6 @@ __pycache__/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Locally trained anomaly detection model artifacts
+ml/artifacts/

@@ -92,12 +92,12 @@ export default function StudentDashboard() {
     {success && <div className="portal-confirmation" role="status"><Icon name="check" />{success}</div>}
     {student && <>
       <section className="portal-card student-welcome">
-        <div><p className="portal-muted">Welcome back</p><h2>{student.first_name}</h2><p className="portal-muted">{student.degree} | Year {student.year_of_study}</p></div>
-        <span className={`portal-status ${approved ? "success" : student.approval_status === "rejected" ? "danger" : "warning"}`}>{student.approval_status}</span>
+        <div className="student-avatar">{student.photo_data ? <img src={student.photo_data} alt="" /> : <span>{student.first_name?.slice(0, 1)}{student.last_name?.slice(0, 1)}</span>}</div><div className="student-welcome-copy"><p className="portal-muted">Welcome back,</p><h2>{student.first_name}</h2><p className="portal-muted">{student.degree} | Year {student.year_of_study}</p><span className="student-meta">ID: {student.school_id} &middot; Active Semester</span></div>
+        <span className={`portal-status ${approved ? "success" : student.approval_status === "rejected" ? "danger" : "warning"}`}>{approved && <Icon name="check" size={13} />}{approved ? "Approved" : student.approval_status}</span>
       </section>
       {!approved && <div className="portal-notice">{student.approval_status === "rejected" ? `Registration rejected: ${student.rejection_reason || "Contact an administrator."}` : "Your registration is awaiting administrator approval. QR generation will be available after approval."}</div>}
       {approved && <section className="portal-card student-qr-card">
-        <h2>Generate QR Code</h2>
+        <span className="entrycode-emblem"><Icon name="scan" /></span><h2>Generate EntryCode</h2>
         <p className="portal-muted">Show this single-use credential to Security Staff. It expires after 90 seconds.</p>
         {qr && qrRemaining > 0 && <img className="portal-qr" src={qr.qr_image} alt="Your student QR credential" />}
         {qr && <p className={qrRemaining > 0 ? "qr-countdown" : "qr-countdown expired"} aria-live="polite">{qrRemaining > 0 ? `Expires in ${Math.floor(qrRemaining / 60)}:${String(qrRemaining % 60).padStart(2, "0")}` : "This QR code has expired. Generate another code."}</p>}

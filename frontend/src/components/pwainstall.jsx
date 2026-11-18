@@ -47,13 +47,13 @@ export function PwaInstallButton({ className = "" }) {
     else await install.prompt();
   }
   return <>
-    <button type="button" className={`pwa-install-button ${className}`} onClick={handleInstall} aria-label="Install QR Verify on this device">
+    <button type="button" className={`pwa-install-button ${className}`} onClick={handleInstall} aria-label="Install EntryCode on this device">
       <Icon name="download" size={18} /><span>Install app</span>
     </button>
     {instructions && <div className="pwa-install-backdrop" role="presentation" onClick={() => setInstructions(false)}>
       <section className="pwa-install-dialog" role="dialog" aria-modal="true" aria-labelledby="pwa-install-title" onClick={(event) => event.stopPropagation()}>
         <button type="button" className="pwa-install-close" onClick={() => setInstructions(false)} aria-label="Close install instructions"><Icon name="close" /></button>
-        <h2 id="pwa-install-title">Add QR Verify to Home Screen</h2>
+        <h2 id="pwa-install-title">Add EntryCode to Home Screen</h2>
         <p>In Safari, tap <Icon name="share" size={18} /> <strong>Share</strong>, then choose <strong>Add to Home Screen</strong>.</p>
         <button type="button" className="portal-button" onClick={() => setInstructions(false)}>Got it</button>
       </section>

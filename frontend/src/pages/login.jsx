@@ -39,9 +39,10 @@ export default function Login() {
 
   return (
     <main className="page-container" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <section className="card" style={{ width: "100%", maxWidth: 420 }}>
-        <h1 style={{ textAlign: "center" }}>QR Verification</h1>
-        <p className="page-description" style={{ textAlign: "center" }}>Student Identity Verification System</p>
+      <section className="card entrycode-auth-card" style={{ width: "100%", maxWidth: 440 }}>
+        <div className="entrycode-auth-brand"><span className="entrycode-auth-mark">EC</span><span>Entry<span>Code</span></span></div>
+        <h1 style={{ textAlign: "center" }}>Welcome back</h1>
+        <p className="page-description" style={{ textAlign: "center" }}>Secure campus entry and identity verification</p>
         {error && <p role="alert" className="alert alert-danger">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">

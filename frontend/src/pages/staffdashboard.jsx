@@ -42,8 +42,8 @@ export default function StaffDashboard() {
     {error && <div className="portal-notice" role="alert">{error}</div>}
     {success && <div className="portal-confirmation" role="status"><Icon name="check" />{success}</div>}
     {profile && <>
-      <div className="portal-card student-welcome"><div><p className="portal-muted">Welcome back</p><h2>{profile.full_name}</h2><p className="portal-muted">{profile.work_role} | School ID {profile.school_id}</p></div></div>
-      <div className="portal-card student-qr-card"><h2>Generate QR Code</h2><p className="portal-muted">Your staff credential is valid for 90 seconds and may be scanned once.</p>
+      <div className="portal-card student-welcome"><div className="student-avatar"><span>{profile.first_name?.slice(0, 1)}{profile.last_name?.slice(0, 1)}</span></div><div className="student-welcome-copy"><p className="portal-muted">Welcome back,</p><h2>{profile.full_name}</h2><p className="portal-muted">{profile.work_role}</p><span className="student-meta">School ID: {profile.school_id}</span></div></div>
+      <div className="portal-card student-qr-card"><span className="entrycode-emblem"><Icon name="scan" /></span><h2>Generate EntryCode</h2><p className="portal-muted">Your staff credential is valid for 90 seconds and may be scanned once.</p>
         {qr && remaining > 0 && <img className="portal-qr" src={qr.qr_image} alt="Your staff QR credential" />}
         {qr && <p className={remaining > 0 ? "qr-countdown" : "qr-countdown expired"}>{remaining > 0 ? `Expires in ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}` : "This QR code has expired."}</p>}
         <button type="button" className="portal-button" onClick={generate} disabled={busy}>{busy ? "Generating..." : qr ? "Generate a new QR code" : "Generate QR Code"}</button>
