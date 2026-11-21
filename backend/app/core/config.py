@@ -5,10 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_name: str = "Smart QR Student Verification API"
     debug: bool = True
-    database_url: str = (
-        "postgresql+psycopg://postgres:123456@localhost:5432/qr_verification"
-    )
-    jwt_secret_key: str = "CHANGE_THIS_BEFORE_PRODUCTION"
+    database_url: str
+    jwt_secret_key: str
     access_token_expire_minutes: int = 30
 
     @field_validator("debug", mode="before")
